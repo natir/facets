@@ -124,6 +124,8 @@ segsnps <- function(mat, cval=25, hetscale=FALSE, delta=0) {
     ii <- is.finite(mat$cnlr)
     # keep only the necessary variables for segmentation
     mat <- mat[ii, c("chrom","cnlr","valor","het")]
+    print("Clean mat")
+    gc(verbose=TRUE, reset=TRUE, full=TRUE)
     # convert minimum effect size deltaCN into standardized log-rato 
     delta <- log2(1+delta/2)/mad(diff(mat$cnlr), na.rm=TRUE)
     # from log-ratio into AUC scale
@@ -155,12 +157,18 @@ segsnps <- function(mat, cval=25, hetscale=FALSE, delta=0) {
             # segment indicator
             seg.widths <- diff(tmp$seg.ends)
             mat$seg[mat$chrom==i] <- rep(1:length(seg.widths), seg.widths)
+            print("In loop")
+            rm(tmp)
+            gc(verbose=TRUE, reset=TRUE, full=TRUE)
         }
     }
     attr(seg.tree, "cval") <- cval
     # add segs to original matrix
     mat0$seg <- rep(NA_real_, nrow(mat0))
     mat0$seg[ii] <- mat$seg
+    print("Clean mat")
+    rm(mat)
+    gc(verbose=TRUE, reset=TRUE, full=TRUE)
     # return matrix
     list(seg.tree=seg.tree, jointseg=mat0, hscl=hscl, chromlevels=na.omit(chrs))
 }
